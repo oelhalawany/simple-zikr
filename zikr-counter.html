@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -23,16 +24,16 @@
     min-height: 100vh;
   }
   .wrap {
-    max-width: 460px;
+    max-width: 520px;
     margin: 0 auto;
-    padding: 28px 16px 60px;
+    padding: 26px 16px 50px;
     position: relative;
   }
   .corner {
     position: fixed;
     width: 220px;
     height: 220px;
-    opacity: 0.08;
+    opacity: 0.07;
     pointer-events: none;
   }
   .corner.tl { top: -40px; right: -40px; }
@@ -40,66 +41,42 @@
 
   header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
   }
   header .date {
     font-size: 13px;
-    letter-spacing: 0.02em;
     color: var(--sage);
     margin: 0 0 6px;
   }
   header h1 {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     margin: 0;
   }
 
-  .phrase-grid {
+  .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
     margin-bottom: 24px;
   }
-  .chip {
-    font-size: 18px;
-    font-weight: bold;
-    padding: 18px 10px;
-    min-height: 64px;
-    border-radius: 14px;
-    border: 2px solid rgba(237,231,214,0.25);
-    background: rgba(237,231,214,0.04);
-    color: var(--text-on-ink);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    line-height: 1.3;
-  }
-  .chip.active {
-    background: var(--brass);
-    border-color: var(--brass);
-    color: var(--ink);
-  }
-
-  .counter-zone {
+  .cell {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 24px;
   }
-  .ring-wrap {
+  .circle-wrap {
     position: relative;
-    width: min(88vw, 320px);
-    height: min(88vw, 320px);
-    margin-bottom: 18px;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 220px;
   }
-  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .ring-bg { fill: none; stroke: rgba(237,231,214,0.12); stroke-width: 12; }
-  .ring-fg { fill: none; stroke: var(--brass-light); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 0.2s ease; }
-  .tap-btn {
+  .circle-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(237,231,214,0.12); stroke-width: 7; }
+  .ring-fg { fill: none; stroke: var(--brass-light); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.2s ease; }
+  .tap-circle {
     position: absolute;
-    top: 12px; right: 12px; left: 12px; bottom: 12px;
+    top: 8%; right: 8%; left: 8%; bottom: 8%;
     border-radius: 50%;
     background: var(--ink-2);
     border: none;
@@ -110,38 +87,39 @@
     align-items: center;
     justify-content: center;
     user-select: none;
-    transition: transform 0.08s ease;
+    transition: transform 0.08s ease, background 0.15s ease;
+    padding: 6px;
   }
-  .tap-btn:active { transform: scale(0.96); }
-  .tap-btn .count {
-    font-size: 76px;
+  .tap-circle:active { transform: scale(0.94); background: #1A5F5A; }
+  .tap-circle .count {
+    font-size: clamp(24px, 8vw, 36px);
     font-weight: bold;
     line-height: 1;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
-  .tap-btn .label {
-    font-size: 20px;
+  .tap-circle .label {
+    font-size: clamp(11px, 3.2vw, 14px);
     font-weight: bold;
     color: var(--brass-light);
-    max-width: 220px;
     text-align: center;
+    line-height: 1.25;
   }
-  .tap-hint {
-    font-size: 14px;
-    color: rgba(237,231,214,0.55);
+  .lap-note {
+    font-size: 11px;
+    color: var(--sage);
+    margin-top: 6px;
+    min-height: 14px;
   }
 
   .controls-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: flex;
+    justify-content: center;
     margin-bottom: 24px;
   }
   .ctrl-btn {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: bold;
-    padding: 16px 10px;
-    min-height: 54px;
+    padding: 14px 24px;
     border-radius: 12px;
     border: 2px solid rgba(237,231,214,0.3);
     background: transparent;
@@ -149,28 +127,6 @@
     cursor: pointer;
   }
   .ctrl-btn:active { background: rgba(237,231,214,0.1); }
-
-  .target-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 16px;
-    color: var(--sage);
-    margin-bottom: 24px;
-  }
-  .target-line input {
-    width: 70px;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid var(--sage);
-    color: var(--text-on-ink);
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    padding: 4px;
-  }
-  .target-line input:focus { outline: none; border-bottom-color: var(--brass-light); }
 
   .divider {
     border: none;
@@ -190,7 +146,7 @@
     padding: 16px;
     text-align: center;
   }
-  .stat-card .num { font-size: 26px; font-weight: bold; color: var(--brass-light); }
+  .stat-card .num { font-size: 24px; font-weight: bold; color: var(--brass-light); }
   .stat-card .lbl { font-size: 13px; color: var(--sage); margin-top: 4px; }
 
   .history h2 {
@@ -240,31 +196,10 @@
     <h1>عداد الذكر</h1>
   </header>
 
-  <div class="phrase-grid" id="phrase-grid"></div>
-
-  <div class="counter-zone">
-    <div class="ring-wrap">
-      <svg viewBox="0 0 260 260">
-        <circle class="ring-bg" cx="130" cy="130" r="115"></circle>
-        <circle class="ring-fg" id="ring-fg" cx="130" cy="130" r="115"></circle>
-      </svg>
-      <button class="tap-btn" id="tap-btn">
-        <span class="count" id="count-display">0</span>
-        <span class="label" id="phrase-display">سبحان الله</span>
-      </button>
-    </div>
-    <span class="tap-hint">اضغط على الدائرة للعد</span>
-  </div>
+  <div class="grid" id="grid"></div>
 
   <div class="controls-row">
-    <button class="ctrl-btn" id="undo-btn">تراجع</button>
     <button class="ctrl-btn" id="reset-btn">إعادة اليوم</button>
-  </div>
-
-  <div class="target-line">
-    <span>الهدف</span>
-    <input type="number" id="target-input" min="1" value="33">
-    <span id="target-status"></span>
   </div>
 
   <hr class="divider">
@@ -292,15 +227,15 @@ const PHRASES = [
   { id: 'alhamdulillah', label: 'الحمد لله' },
   { id: 'lailaha', label: 'لا إله إلا الله' },
   { id: 'allahuakbar', label: 'الله أكبر' },
-  { id: 'astaghfirullah', label: 'أستغفر الله' }
+  { id: 'astaghfirullah', label: 'أستغفر الله' },
+  { id: 'lahawla', label: 'لا حول ولا قوة إلا بالله' }
 ];
 
-const STORAGE_KEY = 'zikr-data-ar';
+const LAP = 33;
+const STORAGE_KEY = 'zikr-data-ar-v2';
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
 let state = {
-  activePhraseId: PHRASES[0].id,
-  target: 33,
   today: todayStr(),
   todayCounts: {},
   history: {}
@@ -326,9 +261,10 @@ function loadState() {
       state = Object.assign(state, loaded);
     }
   } catch (e) {
-    // no existing data yet, that's fine
+    // no existing data yet
   }
   rollDayIfNeeded();
+  buildGrid();
   render();
 }
 
@@ -346,45 +282,50 @@ function rollDayIfNeeded() {
   }
 }
 
-function activePhrase() {
-  return PHRASES.find(p => p.id === state.activePhraseId) || PHRASES[0];
-}
-
-function currentCount() {
-  return state.todayCounts[state.activePhraseId] || 0;
-}
-
 function lifetimeTotal() {
   let total = Object.values(state.todayCounts).reduce((a, b) => a + b, 0);
   Object.values(state.history).forEach(day => { total += day.total; });
   return total;
 }
 
+function buildGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const circumference = 2 * Math.PI * 47;
+  PHRASES.forEach(p => {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML =
+      '<div class="circle-wrap">' +
+        '<svg viewBox="0 0 100 100">' +
+          '<circle class="ring-bg" cx="50" cy="50" r="47"></circle>' +
+          '<circle class="ring-fg" id="ring-' + p.id + '" cx="50" cy="50" r="47" stroke-dasharray="' + circumference + '"></circle>' +
+        '</svg>' +
+        '<button class="tap-circle" id="btn-' + p.id + '" data-id="' + p.id + '">' +
+          '<span class="count" id="count-' + p.id + '">0</span>' +
+          '<span class="label">' + p.label + '</span>' +
+        '</button>' +
+      '</div>' +
+      '<span class="lap-note" id="lap-' + p.id + '"></span>';
+    grid.appendChild(cell);
+    document.getElementById('btn-' + p.id).addEventListener('click', () => tap(p.id));
+  });
+}
+
 function render() {
   document.getElementById('today-date').textContent = new Date().toLocaleDateString('ar-EG', { weekday: 'long', month: 'long', day: 'numeric' });
 
-  const grid = document.getElementById('phrase-grid');
-  grid.innerHTML = '';
+  const circumference = 2 * Math.PI * 47;
   PHRASES.forEach(p => {
-    const chip = document.createElement('button');
-    chip.className = 'chip' + (p.id === state.activePhraseId ? ' active' : '');
-    chip.textContent = p.label;
-    chip.onclick = () => { state.activePhraseId = p.id; render(); };
-    grid.appendChild(chip);
+    const count = state.todayCounts[p.id] || 0;
+    document.getElementById('count-' + p.id).textContent = count.toLocaleString('ar-EG');
+    const progress = (count % LAP) / LAP;
+    const ring = document.getElementById('ring-' + p.id);
+    const offset = count === 0 ? circumference : circumference * (1 - progress);
+    ring.style.strokeDashoffset = offset;
+    const laps = Math.floor(count / LAP);
+    document.getElementById('lap-' + p.id).textContent = laps > 0 ? ('× ' + laps.toLocaleString('ar-EG') + ' دورة') : '';
   });
-
-  const count = currentCount();
-  document.getElementById('count-display').textContent = count;
-  document.getElementById('phrase-display').textContent = activePhrase().label;
-
-  const target = Math.max(1, parseInt(state.target) || 33);
-  const circumference = 2 * Math.PI * 115;
-  const progress = Math.min(count / target, 1);
-  const ring = document.getElementById('ring-fg');
-  ring.style.strokeDasharray = circumference;
-  ring.style.strokeDashoffset = circumference * (1 - progress);
-  document.getElementById('target-input').value = state.target;
-  document.getElementById('target-status').textContent = count >= target ? 'تم الوصول' : 'باقي ' + (target - count);
 
   document.getElementById('lifetime-total').textContent = lifetimeTotal().toLocaleString('ar-EG');
   document.getElementById('days-tracked').textContent = Object.keys(state.history).length.toLocaleString('ar-EG');
@@ -405,39 +346,16 @@ function render() {
   }
 }
 
-function tap() {
+function tap(id) {
   rollDayIfNeeded();
-  const id = state.activePhraseId;
   state.todayCounts[id] = (state.todayCounts[id] || 0) + 1;
   render();
   scheduleSave();
   if (navigator.vibrate) navigator.vibrate(8);
 }
 
-function undo() {
-  const id = state.activePhraseId;
-  if (state.todayCounts[id] > 0) {
-    state.todayCounts[id] -= 1;
-    render();
-    scheduleSave();
-  }
-}
-
-function resetToday() {
-  state.todayCounts[state.activePhraseId] = 0;
-  render();
-  scheduleSave();
-}
-
-document.getElementById('tap-btn').addEventListener('click', tap);
-document.getElementById('undo-btn').addEventListener('click', undo);
-document.getElementById('reset-btn').addEventListener('click', resetToday);
-document.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') { e.preventDefault(); tap(); }
-});
-document.getElementById('target-input').addEventListener('change', (e) => {
-  const val = parseInt(e.target.value) || 33;
-  state.target = val;
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.todayCounts = {};
   render();
   scheduleSave();
 });
