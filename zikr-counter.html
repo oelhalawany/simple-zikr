@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>عداد الذكر</title>
+<style>
+  :root {
+    --ink: #0F3B39;
+    --ink-2: #14504C;
+    --brass: #B5883C;
+    --brass-light: #E4C98A;
+    --sage: #7FA893;
+    --text-on-ink: #EDE7D6;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--text-on-ink);
+    font-family: 'Geeza Pro', 'Traditional Arabic', Tahoma, sans-serif;
+    min-height: 100vh;
+  }
+  .wrap {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 28px 16px 60px;
+    position: relative;
+  }
+  .corner {
+    position: fixed;
+    width: 220px;
+    height: 220px;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+  .corner.tl { top: -40px; right: -40px; }
+  .corner.br { bottom: -40px; left: -40px; transform: rotate(180deg); }
+
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  header .date {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--sage);
+    margin: 0 0 6px;
+  }
+  header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .phrase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .chip {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 18px 10px;
+    min-height: 64px;
+    border-radius: 14px;
+    border: 2px solid rgba(237,231,214,0.25);
+    background: rgba(237,231,214,0.04);
+    color: var(--text-on-ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .chip.active {
+    background: var(--brass);
+    border-color: var(--brass);
+    color: var(--ink);
+  }
+
+  .counter-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .ring-wrap {
+    position: relative;
+    width: min(88vw, 320px);
+    height: min(88vw, 320px);
+    margin-bottom: 18px;
+  }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(237,231,214,0.12); stroke-width: 12; }
+  .ring-fg { fill: none; stroke: var(--brass-light); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 0.2s ease; }
+  .tap-btn {
+    position: absolute;
+    top: 12px; right: 12px; left: 12px; bottom: 12px;
+    border-radius: 50%;
+    background: var(--ink-2);
+    border: none;
+    color: var(--text-on-ink);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: transform 0.08s ease;
+  }
+  .tap-btn:active { transform: scale(0.96); }
+  .tap-btn .count {
+    font-size: 76px;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .tap-btn .label {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--brass-light);
+    max-width: 220px;
+    text-align: center;
+  }
+  .tap-hint {
+    font-size: 14px;
+    color: rgba(237,231,214,0.55);
+  }
+
+  .controls-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .ctrl-btn {
+    font-size: 17px;
+    font-weight: bold;
+    padding: 16px 10px;
+    min-height: 54px;
+    border-radius: 12px;
+    border: 2px solid rgba(237,231,214,0.3);
+    background: transparent;
+    color: var(--text-on-ink);
+    cursor: pointer;
+  }
+  .ctrl-btn:active { background: rgba(237,231,214,0.1); }
+
+  .target-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    color: var(--sage);
+    margin-bottom: 24px;
+  }
+  .target-line input {
+    width: 70px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--sage);
+    color: var(--text-on-ink);
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
+  }
+  .target-line input:focus { outline: none; border-bottom-color: var(--brass-light); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(237,231,214,0.15);
+    margin: 0 0 20px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .stat-card {
+    background: var(--ink-2);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .num { font-size: 26px; font-weight: bold; color: var(--brass-light); }
+  .stat-card .lbl { font-size: 13px; color: var(--sage); margin-top: 4px; }
+
+  .history h2 {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--sage);
+    margin: 0 0 10px;
+  }
+  .history-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(237,231,214,0.08);
+  }
+  .history-row .d { color: rgba(237,231,214,0.6); }
+  .empty-note {
+    font-size: 14px;
+    color: rgba(237,231,214,0.4);
+    text-align: center;
+    padding: 8px 0;
+  }
+</style>
+</head>
+<body>
+
+<svg class="corner tl" viewBox="0 0 200 200">
+  <g fill="none" stroke="#E4C98A" stroke-width="1.5">
+    <circle cx="100" cy="100" r="90"/>
+    <circle cx="100" cy="100" r="70"/>
+    <polygon points="100,10 190,100 100,190 10,100"/>
+    <polygon points="100,30 170,100 100,170 30,100"/>
+  </g>
+</svg>
+<svg class="corner br" viewBox="0 0 200 200">
+  <g fill="none" stroke="#E4C98A" stroke-width="1.5">
+    <circle cx="100" cy="100" r="90"/>
+    <circle cx="100" cy="100" r="70"/>
+    <polygon points="100,10 190,100 100,190 10,100"/>
+    <polygon points="100,30 170,100 100,170 30,100"/>
+  </g>
+</svg>
+
+<div class="wrap">
+  <header>
+    <p class="date" id="today-date"></p>
+    <h1>عداد الذكر</h1>
+  </header>
+
+  <div class="phrase-grid" id="phrase-grid"></div>
+
+  <div class="counter-zone">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 260 260">
+        <circle class="ring-bg" cx="130" cy="130" r="115"></circle>
+        <circle class="ring-fg" id="ring-fg" cx="130" cy="130" r="115"></circle>
+      </svg>
+      <button class="tap-btn" id="tap-btn">
+        <span class="count" id="count-display">0</span>
+        <span class="label" id="phrase-display">سبحان الله</span>
+      </button>
+    </div>
+    <span class="tap-hint">اضغط على الدائرة للعد</span>
+  </div>
+
+  <div class="controls-row">
+    <button class="ctrl-btn" id="undo-btn">تراجع</button>
+    <button class="ctrl-btn" id="reset-btn">إعادة اليوم</button>
+  </div>
+
+  <div class="target-line">
+    <span>الهدف</span>
+    <input type="number" id="target-input" min="1" value="33">
+    <span id="target-status"></span>
+  </div>
+
+  <hr class="divider">
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num" id="lifetime-total">0</div>
+      <div class="lbl">الإجمالي الكلي</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="days-tracked">0</div>
+      <div class="lbl">عدد الأيام</div>
+    </div>
+  </div>
+
+  <div class="history">
+    <h2>الأيام السابقة</h2>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<script>
+const PHRASES = [
+  { id: 'subhanallah', label: 'سبحان الله' },
+  { id: 'alhamdulillah', label: 'الحمد لله' },
+  { id: 'lailaha', label: 'لا إله إلا الله' },
+  { id: 'allahuakbar', label: 'الله أكبر' },
+  { id: 'astaghfirullah', label: 'أستغفر الله' }
+];
+
+const STORAGE_KEY = 'zikr-data-ar';
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+let state = {
+  activePhraseId: PHRASES[0].id,
+  target: 33,
+  today: todayStr(),
+  todayCounts: {},
+  history: {}
+};
+
+let saveTimer = null;
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('save failed', e);
+    }
+  }, 300);
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+    }
+  } catch (e) {
+    // no existing data yet, that's fine
+  }
+  rollDayIfNeeded();
+  render();
+}
+
+function rollDayIfNeeded() {
+  const now = todayStr();
+  if (state.today !== now) {
+    if (state.today && Object.keys(state.todayCounts).length) {
+      const total = Object.values(state.todayCounts).reduce((a, b) => a + b, 0);
+      if (total > 0) {
+        state.history[state.today] = { total, breakdown: state.todayCounts };
+      }
+    }
+    state.today = now;
+    state.todayCounts = {};
+  }
+}
+
+function activePhrase() {
+  return PHRASES.find(p => p.id === state.activePhraseId) || PHRASES[0];
+}
+
+function currentCount() {
+  return state.todayCounts[state.activePhraseId] || 0;
+}
+
+function lifetimeTotal() {
+  let total = Object.values(state.todayCounts).reduce((a, b) => a + b, 0);
+  Object.values(state.history).forEach(day => { total += day.total; });
+  return total;
+}
+
+function render() {
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('ar-EG', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const grid = document.getElementById('phrase-grid');
+  grid.innerHTML = '';
+  PHRASES.forEach(p => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (p.id === state.activePhraseId ? ' active' : '');
+    chip.textContent = p.label;
+    chip.onclick = () => { state.activePhraseId = p.id; render(); };
+    grid.appendChild(chip);
+  });
+
+  const count = currentCount();
+  document.getElementById('count-display').textContent = count;
+  document.getElementById('phrase-display').textContent = activePhrase().label;
+
+  const target = Math.max(1, parseInt(state.target) || 33);
+  const circumference = 2 * Math.PI * 115;
+  const progress = Math.min(count / target, 1);
+  const ring = document.getElementById('ring-fg');
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = circumference * (1 - progress);
+  document.getElementById('target-input').value = state.target;
+  document.getElementById('target-status').textContent = count >= target ? 'تم الوصول' : 'باقي ' + (target - count);
+
+  document.getElementById('lifetime-total').textContent = lifetimeTotal().toLocaleString('ar-EG');
+  document.getElementById('days-tracked').textContent = Object.keys(state.history).length.toLocaleString('ar-EG');
+
+  const histList = document.getElementById('history-list');
+  histList.innerHTML = '';
+  const days = Object.keys(state.history).sort().reverse().slice(0, 10);
+  if (days.length === 0) {
+    histList.innerHTML = '<div class="empty-note">ستظهر هنا أيامك المكتملة</div>';
+  } else {
+    days.forEach(d => {
+      const row = document.createElement('div');
+      row.className = 'history-row';
+      const dateLabel = new Date(d + 'T00:00:00').toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+      row.innerHTML = '<span class="d">' + dateLabel + '</span><span>' + state.history[d].total.toLocaleString('ar-EG') + '</span>';
+      histList.appendChild(row);
+    });
+  }
+}
+
+function tap() {
+  rollDayIfNeeded();
+  const id = state.activePhraseId;
+  state.todayCounts[id] = (state.todayCounts[id] || 0) + 1;
+  render();
+  scheduleSave();
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+
+function undo() {
+  const id = state.activePhraseId;
+  if (state.todayCounts[id] > 0) {
+    state.todayCounts[id] -= 1;
+    render();
+    scheduleSave();
+  }
+}
+
+function resetToday() {
+  state.todayCounts[state.activePhraseId] = 0;
+  render();
+  scheduleSave();
+}
+
+document.getElementById('tap-btn').addEventListener('click', tap);
+document.getElementById('undo-btn').addEventListener('click', undo);
+document.getElementById('reset-btn').addEventListener('click', resetToday);
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); tap(); }
+});
+document.getElementById('target-input').addEventListener('change', (e) => {
+  const val = parseInt(e.target.value) || 33;
+  state.target = val;
+  render();
+  scheduleSave();
+});
+
+loadState();
+</script>
+
+</body>
+</html>
