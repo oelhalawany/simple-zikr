@@ -176,23 +176,6 @@
 </head>
 <body>
 
-<svg class="corner tl" viewBox="0 0 200 200">
-  <g fill="none" stroke="#E4C98A" stroke-width="1.5">
-    <circle cx="100" cy="100" r="90"/>
-    <circle cx="100" cy="100" r="70"/>
-    <polygon points="100,10 190,100 100,190 10,100"/>
-    <polygon points="100,30 170,100 100,170 30,100"/>
-  </g>
-</svg>
-<svg class="corner br" viewBox="0 0 200 200">
-  <g fill="none" stroke="#E4C98A" stroke-width="1.5">
-    <circle cx="100" cy="100" r="90"/>
-    <circle cx="100" cy="100" r="70"/>
-    <polygon points="100,10 190,100 100,190 10,100"/>
-    <polygon points="100,30 170,100 100,170 30,100"/>
-  </g>
-</svg>
-
 <div class="wrap">
   <header>
     <p class="date" id="today-date"></p>
@@ -202,7 +185,7 @@
   <div class="grid" id="grid"></div>
 
   <div class="controls-row">
-    <button class="ctrl-btn" id="reset-btn">إعادة اليوم</button>
+    <button class="ctrl-btn" id="undo-btn">تراجع</button>
   </div>
 
   <hr class="divider">
@@ -243,6 +226,8 @@ let state = {
   todayCounts: {},
   history: {}
 };
+
+let tapStack = [];
 
 let saveTimer = null;
 function scheduleSave() {
@@ -352,16 +337,23 @@ function render() {
 function tap(id) {
   rollDayIfNeeded();
   state.todayCounts[id] = (state.todayCounts[id] || 0) + 1;
+  tapStack.push(id);
   render();
   scheduleSave();
   if (navigator.vibrate) navigator.vibrate(8);
 }
 
-document.getElementById('reset-btn').addEventListener('click', () => {
-  state.todayCounts = {};
-  render();
-  scheduleSave();
-});
+function undoLast() {
+  const id = tapStack.pop();
+  if (id && state.todayCounts[id] > 0) {
+    state.todayCounts[id] -= 1;
+    render();
+    scheduleSave();
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+}
+
+document.getElementById('undo-btn').addEventListener('click', undoLast);
 
 loadState();
 </script>
